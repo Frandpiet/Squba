@@ -1,142 +1,137 @@
-import sys
+from argparse import Namespace
 from json import dump, dumps, load
 from os import getcwd
 from os.path import isfile
+from typing import Literal
 
 from colorama import Fore
 
 
-class File:
-  def __init__(self, path, config, query):
-    self.lvl = len(path.replace(getcwd(),'').split('\\'))-1
-    self.route = path
-    self.file_name = self.route.split('\\')[-1]
-    self.is_file = isfile(self.route)
-    self.query = query
-    self.config = config
-    
-    if self.is_file:
-      extension = self.file_name.split('.')[-1]
-      self.extension = extension if extension in self.config.get_extensions() else 'unknownFile'
-      
-    if not self.is_file and self.lvl != 0:
-      self.file_name = self.file_name + ' (LvL %s)' % self.lvl
-      
-    self.symbol = self.get_symbol()
-
-  def display(self):
-    display = ((' ' * self.query.indent) * self.lvl)+self.__repr__()
-    return display
-
-  def check_match(self):
-    check = any([term in self.file_name for term in self.query.search])
-    if check:
-      self.file_name = Fore.LIGHTGREEN_EX + self.file_name# + self.config.matchedFileSymbol
-    else:
-      self.file_name = Fore.WHITE + self.file_name
-    return check
-      
-  def check_exclude(self):
-    return (
-        any([term in self.file_name for term in self.query.exclude])
-      )
-  
-  def check_lvl(self):
-    return self.lvl > self.query.max_lvl
-              
-  def __repr__(self):
-    return '%s %s' % (self.symbol, self.file_name)
-
-  def get_symbol(self):
-    if self.is_file:
-      if self.extension == 'unknownFile':
-        return self.config.unknownFileSymbol
-      
-      for symbol, ext_list in self.config.symbols.items():
-        if self.extension in ext_list:
-          return symbol
-    else:
-      return self.config.folderSymbol
-    
-  
 class Config:
-  def __init__(self, file_location: str):
-    
-    self.fileLocation = file_location
-    
-    with open(self.fileLocation, 'r', encoding='utf-8') as f:
-      
-      self.defaultConfig = load(f)
-      
+  def __init__(self, file_location: str) -> None:
+    self.FILE_LOCATION = file_location
+    with open(self.FILE_LOCATION, 'r', encoding='utf-8') as f:
+      self.DEFAULT_CONFIG: dict = load(f)
     for key, value in self.items():
-      
-      self.__setattr__(key,value)
-  
+      self.__setattr__(key, value)
+
   def __repr__(self) -> str:
-    return dumps((self.defaultConfig), indent=2)
-  
-  def items(self):
+    return dumps((self.DEFAULT_CONFIG), indent=2)
+
+  def items(self) -> dict:
     return self.__dict__().items()
-  
-  def __dict__(self):
-    return self.defaultConfig
-  
-  def get_extensions(self):
-    ext = []
+
+  def __dict__(self) -> dict:
+    return self.DEFAULT_CONFIG
+
+  def get_extensions(self) -> list[str]:
+    ext: list[str] = []
     for value in self.symbols.values():
       ext.extend(value)
     return ext
-  
+
+
 class Query:
-  def __init__(self, args, last_diving_file):
-    self.path = args.path.replace('\\','/')
-    self.detail = args.detail
-    self.max_lvl = args.max_lvl
-    self.search = args.search
-    self.exclude = args.exclude
-    self.indent = args.indent
-    self.log = args.log
-    self.mode = args.mode
-    
-    with open(last_diving_file, 'w') as f:
+  def __init__(self, args: Namespace, last_diving_file: str) -> None:
+    self.PATH: str = args.path.replace('\\', '/')
+    self.DETAIL: bool = args.detail
+    self.MAX_LVL: int = args.max_lvl
+    self.SEARCH: list[str] = args.search
+    self.EXCLUDE: list[str] = args.exclude
+    self.INDENT: int = args.indent
+    self.LOG: bool = args.log
+    self.MODE: str = args.mode
+
+    with open(last_diving_file, 'w', encoding='utf-8') as f:
       dump(self.__dict__, f, indent=2)
-  
+
+
+class File:
+  def __init__(self, path: str, config: Config, query: Query) -> None:
+    self.LVL = len(path.replace(getcwd(), '').split('\\'))-1
+    self.ROUTE = path
+    self.file_name = self.ROUTE.split('\\')[-1]
+    self.IS_FILE = isfile(self.ROUTE)
+    self.QUERY = query
+    self.CONFIG = config
+
+    if self.IS_FILE:
+      extension = self.file_name.split('.')[-1]
+      self.EXTENSION = extension if extension in self.CONFIG.get_extensions() else 'unknownFile'
+
+    if not self.IS_FILE and self.LVL != 0:
+      self.file_name = self.file_name + ' (LvL %s)' % self.LVL
+
+    self.symbol = self.get_symbol()
+
+  def display(self) -> str:
+    display = ((' ' * self.QUERY.INDENT) * self.LVL)+self.__repr__()
+    return display
+
+  def check_match(self) -> bool:
+    check = any([term in self.file_name for term in self.QUERY.SEARCH])
+    if check:
+      self.file_name = Fore.LIGHTGREEN_EX + self.file_name
+    else:
+      self.file_name = Fore.WHITE + self.file_name
+    return check
+
+  def check_exclude(self) -> bool:
+    return (
+        any([term in self.file_name for term in self.QUERY.EXCLUDE])
+      )
+
+  def check_lvl(self) -> bool:
+    return self.LVL > self.QUERY.MAX_LVL
+
+  def __repr__(self) -> str:
+    return '%s %s' % (self.symbol, self.file_name)
+
+  def get_symbol(self) -> Literal['symbol']:
+    if self.IS_FILE:
+      if self.EXTENSION == 'unknownFile':
+        return self.CONFIG.unknownFileSymbol
+
+      for symbol, ext_list in self.CONFIG.symbols.items():
+        if self.EXTENSION in ext_list:
+          return symbol
+    else:
+      return self.CONFIG.folderSymbol
+
+
 class Data:
-  def __init__(self, query) -> None:
+  def __init__(self, query: Query) -> None:
     self.file_count = 0
     self.dir_count = 0
     self.excluded_files = 0
     self.excluded_dirs = 0
     self.matches = 0
     self.results = []
-    self.query = query
-    
-  def display_output(self):
+    self.QUERY = query
+
+  def display_output(self) -> None:
     output = '%s directories; %s files' % (
-    
-    '{:,}'.format(self.dir_count-1),
-    '{:,}'.format(self.file_count)
-    
+      '{:,}'.format(self.dir_count-1),
+      '{:,}'.format(self.file_count)
     )
-    
-    if self.query.search != [] and self.matches > 0:
+
+    if self.QUERY.SEARCH != [] and self.matches > 0:
       output = output+'; '+Fore.LIGHTGREEN_EX+'%s matches'+Fore.WHITE
       output = output % self.matches
 
-    if self.query.exclude != [] and self.excluded_dirs + self.excluded_files > 0:
+    if self.QUERY.EXCLUDE != [] and self.excluded_dirs + self.excluded_files > 0:
       output = output+'; '+Fore.RED+'%s excluded (%s directories, %s files)'+Fore.WHITE
       output = output % (
         self.excluded_dirs + self.excluded_files, self.excluded_dirs, self.excluded_files
         )
-    
+
     print(output)
-  
-  def map_iter(self, func, iter):
+
+  def map_iter(self, func, iter: list | tuple) -> None:
     for item in iter:
       func(item)
-  
-  def display(self):
-    
+
+  def display(self) -> None:
     print('-------------------------------')
     self.map_iter(lambda item: print(item.display()), self.results)
     print(Fore.WHITE+'-------------------------------')

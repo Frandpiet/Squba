@@ -9,84 +9,86 @@ from colorama import init
 from dive.classes import Config
 from dive.utils import defaultConfiguration, get_path_data, split_arg
 
-__updated__ = '2023-02-02 15:43:05'
+__updated__ = '2023-02-02 19:12:57'
 
 init()
 
 if getattr(sys, 'frozen', False):
     # frozen
-    dir_ = dirname(sys.executable)
-    config_file = dir_ + '\config.json'
-    last_diving_file = dir_ + '\last_diving.json'
+    DIR: str = dirname(sys.executable)
+    CONFIG_FILE: str = DIR + '/config.json'
+    LAST_DIVING_FILE: str = DIR + '/last_diving.json'
 else:
     # unfrozen
-    dir_ = dirname(realpath(__file__))
-    config_file = dir_ + '\config.json'
-    last_diving_file = dir_ + '\last_diving.json'
+    DIR: str = dirname(realpath(__file__))
+    CONFIG_FILE: str = DIR + '/config.json'
+    LAST_DIVING_FILE: str = DIR + '/last_diving.json'
 
-if not exists(config_file):
-  with open(config_file, 'w', encoding='utf-8') as f:
-    dump(defaultConfiguration, f, indent=2, ensure_ascii=False)
-    
-config = Config(config_file)
+if not exists(CONFIG_FILE):
+  with open(CONFIG_FILE, 'w', encoding='utf-8') as file:
+    dump(defaultConfiguration, file, indent=2, ensure_ascii=False)
 
-def extend_exclude(x):
-  exclude_list = split_arg(x)
-  exclude_list.extend(config.defaultExclude)
+CONFIG = Config(CONFIG_FILE)
+
+
+def extend_exclude(x: str):
+  exclude_list: str = split_arg(x)
+  exclude_list.extend(CONFIG.defaultExclude)
   return exclude_list
 
-parser = ArgumentParser()
 
-parser.add_argument('path', type=join, nargs='?',default=getcwd(),
+PARSER = ArgumentParser()
+
+PARSER.add_argument('path', type=join, nargs='?', default=getcwd(),
                     help='path to dive into; e.g. "C:\\Users\\<User>\\Desktop"')
 
-parser.add_argument('-L', '--max-lvl',default=config.defaultMaxLvl,type=int,
-                    help='dive down to a certain level (default = %s); e.g. 3' % config.defaultMaxLvl)
+PARSER.add_argument('-L', '--max-lvl', default=CONFIG.defaultMaxLvl, type=int,
+                    help='dive down to a certain level (default = %s); e.g. 3' % CONFIG.defaultMaxLvl)
 
-parser.add_argument('-S', '--search',default=[],type=split_arg,
+PARSER.add_argument('-S', '--search', default=[], type=split_arg,
                     help='list of stuff (terms) to look for while diving, separated by commas; e.g ".txt,microsoft"')
 
-parser.add_argument('-E', '--exclude',default=config.defaultExclude,type=extend_exclude,
-                    help='list of stuff (terms) to ignore while diving, separated by commas (default => %s); e.g ".txt,microsoft"' % config.defaultExclude)
+PARSER.add_argument('-E', '--exclude', default=CONFIG.defaultExclude, type=extend_exclude,
+                    help='list of stuff (terms) to ignore while diving, separated by commas (default => %s); e.g ".txt,microsoft"' % CONFIG.defaultExclude)
 
-parser.add_argument('-I', '--indent',default=config.defaultIndent, type=int,
-                    help='indentation spaces (default => %s); e.g 3' % config.defaultIndent)
+PARSER.add_argument('-I', '--indent', default=CONFIG.defaultIndent, type=int,
+                    help='indentation spaces (default => %s); e.g 3' % CONFIG.defaultIndent)
 
-parser.add_argument('-M', '--mode',default=config.defaultMode, choices=['all', 'folders', 'files'])
+PARSER.add_argument('-M', '--mode', default=CONFIG.defaultMode, choices=['all', 'folders', 'files'])
 
-parser.add_argument('--detail',action='store_true',help='make a deep diving')
+PARSER.add_argument('--detail', action='store_true', help='make a deep diving')
 
-parser.add_argument('--log',action='store_true', help='whether to log every found file or not')
+PARSER.add_argument('--log', action='store_true', help='whether to log every found file or not')
 
-parser.add_argument('--config',action='store_true',help='get configuration file location')
+PARSER.add_argument('--config', action='store_true', help='get configuration file location')
 
-parser.add_argument('--last',action='store_true',help='get last diving info')
+PARSER.add_argument('--last', action='store_true', help='get last diving info')
 
-parser.add_argument('--dir',action='store_true',help='get directory location')
+PARSER.add_argument('--dir', action='store_true', help='get directory location')
 
 if __name__ == '__main__':
 
-  args = parser.parse_args()
-  
-  
-  if args.max_lvl != config.defaultMaxLvl and not args.detail:
-    parser.error('--max_lvl must be used with --detail')
+  ARGS = PARSER.parse_args()
 
-  if args.last:
-    if exists(last_diving_file):
-      with open(last_diving_file, 'r', encoding='utf-8') as f:
-        print(load(f, indent=2))
+  if ARGS.max_lvl != CONFIG.defaultMaxLvl and not ARGS.detail:
+    PARSER.error('--max_lvl must be used with --detail')
+
+  if ARGS.last:
+    if exists(LAST_DIVING_FILE):
+      with open(LAST_DIVING_FILE, 'r', encoding='utf-8') as file:
+        print(load(file, indent=2))
     else:
       print("You haven't submerged into the depths of your file system yet.")
     sys.exit()
 
-  if args.config:
-    print(config_file)
+  if ARGS.config:
+    print(CONFIG_FILE)
     sys.exit()
-    
-  if args.dir:
-    print(dir_)
+
+  if ARGS.dir:
+
+    print(DIR)
     sys.exit()
-  
-  data = get_path_data(args, config, last_diving_file)
-  data.display()
+
+  DATA = get_path_data(ARGS, CONFIG, LAST_DIVING_FILE)
+  DATA.display()
