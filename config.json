@@ -1,0 +1,25 @@
+{
+	"defaultDetail": false,
+	"defaultMaxLvl": 3,
+	"defaultExclude": [".sys", ".tmp", "node_modules", ".git", ".env"],
+	"defaultIndent": 2,
+	"defaultMode": "all",
+	"symbols": {
+		"🎶": ["mp3", "wav"],
+		"🗜️": ["7z", "rar", "zip"],
+		"📝": ["txt", "md", "log"],
+		"🖼️": ["jpg", "jpeg", "png", "pdf", "svg", "ico", "gif"],
+		"🖥️": ["bat", "sh", "msi"],
+		"⚙️": ["ini", "dll", "yml"],
+		"🔧": ["sys", "json"],
+		"🎬": ["mp4", "avi"],
+		"✒️": ["lnk"],
+		"🐍": ["py", "python"],
+		"💾": ["exe"],
+		"💿": ["iso"],
+		"📤": ["torrent"]
+	},
+	"unknownFileSymbol": "📄",
+	"matchedFileSymbol": "❗",
+	"folderSymbol": "📁"
+}
