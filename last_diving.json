@@ -1,0 +1,16 @@
+{
+  "path": "D:/Documents/Programming/Python/Projects/Squba/source",
+  "detail": false,
+  "max_lvl": 3,
+  "search": [],
+  "exclude": [
+    ".sys",
+    ".tmp",
+    "node_modules",
+    ".git",
+    ".env"
+  ],
+  "indent": 2,
+  "log": false,
+  "mode": "all"
+}
