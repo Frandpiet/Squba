@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import sys
 from argparse import ArgumentParser
 from json import dump, load
@@ -6,23 +8,24 @@ from os.path import dirname, exists, join, realpath
 
 from colorama import init
 
-from dive.classes import Config
-from dive.utils import defaultConfiguration, get_path_data, split_arg
+from squba.classes import Config
+from squba.dive import dive
+from squba.utils import defaultConfiguration, split_arg
 
-__updated__ = '2023-02-02 19:12:57'
+__updated__ = '2023-02-02 20:08:03'
 
 init()
 
 if getattr(sys, 'frozen', False):
     # frozen
     DIR: str = dirname(sys.executable)
-    CONFIG_FILE: str = DIR + '/config.json'
-    LAST_DIVING_FILE: str = DIR + '/last_diving.json'
+    CONFIG_FILE = DIR + '/config.json'
+    LAST_DIVING_FILE = DIR + '/last_diving.json'
 else:
     # unfrozen
     DIR: str = dirname(realpath(__file__))
-    CONFIG_FILE: str = DIR + '/config.json'
-    LAST_DIVING_FILE: str = DIR + '/last_diving.json'
+    CONFIG_FILE = DIR + '/config.json'
+    LAST_DIVING_FILE = DIR + '/last_diving.json'
 
 if not exists(CONFIG_FILE):
   with open(CONFIG_FILE, 'w', encoding='utf-8') as file:
@@ -90,5 +93,5 @@ if __name__ == '__main__':
     print(DIR)
     sys.exit()
 
-  DATA = get_path_data(ARGS, CONFIG, LAST_DIVING_FILE)
+  DATA = dive(ARGS, CONFIG, LAST_DIVING_FILE)
   DATA.display()
