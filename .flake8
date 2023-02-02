@@ -3,3 +3,4 @@ max-line-length = 10000
 indent-size = 2
 count = true
 new-line = false
+exclude = __init__.py

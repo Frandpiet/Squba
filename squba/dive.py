@@ -1,14 +1,13 @@
+
 from argparse import Namespace
 from os import chdir, listdir, walk
-from os.path import dirname, join
+from os.path import join
 from time import sleep
 
-from dive.classes import Config, Data, File, Query
-
-file_dir = dirname(__file__)
+from squba.classes import Config, Data, File, Query
 
 
-def get_path_data(args: Namespace, config: Config, last_diving_file: str) -> Data:
+def dive(args: Namespace, config: Config, last_diving_file: str) -> Data:
 
   QUERY = Query(args, last_diving_file)
 
@@ -127,40 +126,3 @@ def get_path_data(args: Namespace, config: Config, last_diving_file: str) -> Dat
         DATA.dir_count += 1
 
     return DATA
-
-
-def expose(content: any):
-  print('----------------------------')
-  print(str(content))
-  print('----------------------------')
-
-
-def split_arg(content: str):
-  return content.replace(', ', ',').replace(' ,', ',').split(',')
-
-
-defaultConfiguration = {
-  "defaultDetail": False,
-  "defaultMaxLvl": 3,
-  "defaultExclude": [".sys", ".tmp", "node_modules", ".git", ".env"],
-  "defaultIndent": 2,
-  "defaultMode": "all",
-  "symbols": {
-    "🎶": ["mp3", "wav"],
-    "🗜️": ["7z", "rar", "zip"],
-    "📝": ["txt", "md", "log"],
-    "🖼️": ["jpg", "jpeg", "png", "pdf", "svg", "ico", "gif"],
-    "🖥️": ["bat", "sh", "msi"],
-    "⚙️": ["ini", "dll", "yml"],
-    "🔧": ["sys", "json"],
-    "🎬": ["mp4", "avi"],
-    "✒️": ["lnk"],
-    "🐍": ["py", "python"],
-    "💾": ["exe"],
-    "💿": ["iso"],
-    "📤": ["torrent"]
-  },
-  "unknownFileSymbol": "📄",
-  "matchedFileSymbol": "❗",
-  "folderSymbol": "📁"
-}

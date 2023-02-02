@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from argparse import Namespace
 from json import dump, dumps, load
 from os import getcwd
@@ -73,7 +75,7 @@ class File:
     if check:
       self.file_name = Fore.LIGHTGREEN_EX + self.file_name
     else:
-      self.file_name = Fore.WHITE + self.file_name
+      self.file_name = Fore.RESET + self.file_name
     return check
 
   def check_exclude(self) -> bool:
@@ -116,11 +118,11 @@ class Data:
     )
 
     if self.QUERY.SEARCH != [] and self.matches > 0:
-      output = output+'; '+Fore.LIGHTGREEN_EX+'%s matches'+Fore.WHITE
+      output = output+'; '+Fore.LIGHTGREEN_EX+'%s matches'+Fore.RESET
       output = output % self.matches
 
     if self.QUERY.EXCLUDE != [] and self.excluded_dirs + self.excluded_files > 0:
-      output = output+'; '+Fore.RED+'%s excluded (%s directories, %s files)'+Fore.WHITE
+      output = output+'; '+Fore.RED+'%s excluded (%s directories, %s files)'+Fore.RESET
       output = output % (
         self.excluded_dirs + self.excluded_files, self.excluded_dirs, self.excluded_files
         )
@@ -134,5 +136,5 @@ class Data:
   def display(self) -> None:
     print('-------------------------------')
     self.map_iter(lambda item: print(item.display()), self.results)
-    print(Fore.WHITE+'-------------------------------')
+    print(Fore.RESET+'-------------------------------')
     self.display_output()
