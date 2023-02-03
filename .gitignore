@@ -4,3 +4,6 @@ build
 Pipfile
 Pipfile.lock
 setup.py
+build.bat
+*.spec
+.vscode
