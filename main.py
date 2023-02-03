@@ -12,20 +12,21 @@ from squba.classes import Config
 from squba.dive import dive
 from squba.utils import defaultConfiguration, split_arg
 
-__updated__ = '2023-02-02 20:08:03'
+__updated__ = '2023-02-02 21:04:22'
 
 init()
 
 if getattr(sys, 'frozen', False):
     # frozen
     DIR: str = dirname(sys.executable)
-    CONFIG_FILE = DIR + '/config.json'
-    LAST_DIVING_FILE = DIR + '/last_diving.json'
+    CONFIG_FILE = DIR + '\\config.json'
+    LAST_DIVING_FILE = DIR + '\\last_diving.json'
 else:
     # unfrozen
     DIR: str = dirname(realpath(__file__))
-    CONFIG_FILE = DIR + '/config.json'
-    LAST_DIVING_FILE = DIR + '/last_diving.json'
+    CONFIG_FILE = DIR + '\\config.json'
+    LAST_DIVING_FILE = DIR + '\\last_diving.json'
+
 
 if not exists(CONFIG_FILE):
   with open(CONFIG_FILE, 'w', encoding='utf-8') as file:
