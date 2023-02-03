@@ -3,8 +3,8 @@
 import sys
 from argparse import ArgumentParser
 from json import dump, load
-from os import getcwd
-from os.path import dirname, exists, join, realpath
+from os import getcwd, getenv, mkdir
+from os.path import exists, join
 
 from colorama import init
 
@@ -12,22 +12,32 @@ from squba.classes import Config
 from squba.dive import dive
 from squba.utils import defaultConfiguration, split_arg
 
-__updated__ = '2023-02-02 21:04:22'
+__updated__ = '2023-02-02 23:11:11'
 
 init()
 
-if getattr(sys, 'frozen', False):
-    # frozen
-    DIR: str = dirname(sys.executable)
-    CONFIG_FILE = DIR + '\\config.json'
-    LAST_DIVING_FILE = DIR + '\\last_diving.json'
-else:
-    # unfrozen
-    DIR: str = dirname(realpath(__file__))
-    CONFIG_FILE = DIR + '\\config.json'
-    LAST_DIVING_FILE = DIR + '\\last_diving.json'
+# if getattr(sys, 'frozen', False):
+#     # frozen
+#     DIR: str = dirname(sys.executable)
 
+#     DIR: str = '%APPDATA%\\SqubaConfig\\'
+#     CONFIG_FILE = DIR + '\\config.json'
+#     LAST_DIVING_FILE = DIR + '\\last_diving.json'
+# else:
+#     # unfrozen
+#     DIR: str = dirname(realpath(__file__))
 
+#     DIR: str = '%APPDATA%\\SqubaConfig\\'
+#     CONFIG_FILE = DIR + '\\config.json'
+#     LAST_DIVING_FILE = DIR + '\\last_diving.json'
+
+DIR = getenv('appdata')+'\\SqubaData'
+
+CONFIG_FILE = DIR + '\\config.json'
+LAST_DIVING_FILE = DIR + '\\last_diving.json'
+
+if not exists(DIR):
+  mkdir(DIR)
 if not exists(CONFIG_FILE):
   with open(CONFIG_FILE, 'w', encoding='utf-8') as file:
     dump(defaultConfiguration, file, indent=2, ensure_ascii=False)
@@ -90,9 +100,10 @@ if __name__ == '__main__':
     sys.exit()
 
   if ARGS.dir:
-
     print(DIR)
     sys.exit()
 
   DATA = dive(ARGS, CONFIG, LAST_DIVING_FILE)
   DATA.display()
+
+  sys.exit()

@@ -134,7 +134,7 @@ class Data:
       func(item)
 
   def display(self) -> None:
-    print('-------------------------------')
+    print(Fore.RESET+'-------------------------------')
     self.map_iter(lambda item: print(item.display()), self.results)
     print(Fore.RESET+'-------------------------------')
     self.display_output()
